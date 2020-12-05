@@ -12,9 +12,9 @@ req_fields = {'byr': lambda s: 1920 <= int(s) <= 2002,
               'iyr': lambda s: 2010 <= int(s) <= 2020,
               'eyr': lambda s: 2020 <= int(s) <= 2030,
               'hgt': größe_gültig,
-              'hcl': lambda s: re.match(r'^#[0-9a-f]{6}$', s),
+              'hcl': lambda s: re.fullmatch(r'#[0-9a-f]{6}', s),
               'ecl': lambda s: s in 'amb blu brn gry grn hzl oth'.split(),
-              'pid': lambda s: re.match(r'^[0-9]{9}$', s)}
+              'pid': lambda s: re.fullmatch(r'[0-9]{9}', s)}
 
 
 def puzzle_einlesen(datei):
