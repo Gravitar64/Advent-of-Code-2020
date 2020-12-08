@@ -2,61 +2,52 @@ import time
 
 def puzzle_einlesen(datei):
   with open(datei) as f:
-    return [[ins for ins in zeile.strip().split()] for zeile in f]
+    return [zeile.strip().split() for zeile in f]
 
-class Intcode:
+class Opcode:
   def __init__(self, puzzle):
-    self.prog = [[opc, int(val)] for opc, val in puzzle]
+    self.prog = puzzle.copy()
     self.pc = 0
     self.acc = 0
-    self.instructions = {'acc': self._acc, 'nop': self._nop, 'jmp': self._jmp}
-    self.terminate = False
-
-  def _acc(self, v):
-    self.acc += v
-    self.pc += 1
-
-  def _jmp(self, v):
-    self.pc += v
-
-  def _nop(self, v):
-    self.pc += 1
 
   def step(self):
-    if self.pc >= len(self.prog):
-      self.terminate = True
-      return
+    if self.pc >= len(self.prog): return self.acc
     opc, val = self.prog[self.pc]
-    self.instructions[opc](val)
-
+    if opc == 'acc': self.acc += int(val)
+    if opc == 'jmp': self.pc += int(val)
+    if opc != 'jmp': self.pc += 1
 
 def löse(puzzle):
-  executed_instructions = set()
-  intcode = Intcode(puzzle)
+  opcode = Opcode(puzzle)
+  executed = set()
   while True:
-    if intcode.pc in executed_instructions:
-      return intcode.acc
-    executed_instructions.add(intcode.pc)
-    intcode.step()
+    if opcode.pc in executed: return opcode.acc
+    executed.add(opcode.pc)
+    opcode.step()
+
+
+
 
 
 def löse2(puzzle):
-  nop2jmp = [i for i in range(len(puzzle)) if puzzle[i][0] in ('jmp', 'nop')]
-  for change in nop2jmp:
-    executed_instructions = set()
-    puzzle[change][0] = 'jmp' if puzzle[change][0] == 'nop' else 'nop'
-    intcode = Intcode(puzzle)
+  nop2jmp = [i for i,instr in enumerate(puzzle) if instr[0] in ('jmp', 'nop')]
+  for i in nop2jmp:
+    puzzle[i][0] = 'jmp' if puzzle[i][0] == 'nop' else 'nop'
+    executed = set()
+    opcode = Opcode(puzzle)
     while True:
-      if intcode.pc in executed_instructions:
-        break
-      executed_instructions.add(intcode.pc)
-      intcode.step()
-      if intcode.terminate:
-        return intcode.acc
-    puzzle[change][0] = 'jmp' if puzzle[change][0] == 'nop' else 'nop'
+      if opcode.pc in executed: break
+      executed.add(opcode.pc)
+      e = opcode.step()
+      if e: return e
+    puzzle[i][0] = 'jmp' if puzzle[i][0] == 'nop' else 'nop'
+
+
+
 
 
 puzzle = puzzle_einlesen('Tag_08.txt')
+
 
 start = time.perf_counter()
 print(löse(puzzle), time.perf_counter()-start)
