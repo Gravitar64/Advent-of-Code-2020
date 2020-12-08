@@ -1,5 +1,6 @@
 import time
 
+
 def puzzle_einlesen(datei):
   with open(datei) as f:
     return [zeile.strip().split() for zeile in f]
@@ -17,6 +18,7 @@ class Opcode:
     if opc == 'jmp': self.pc += int(val)
     if opc != 'jmp': self.pc += 1
 
+
 def löse(puzzle):
   opcode = Opcode(puzzle)
   executed = set()
@@ -26,12 +28,9 @@ def löse(puzzle):
     opcode.step()
 
 
-
-
-
 def löse2(puzzle):
-  nop2jmp = [i for i,instr in enumerate(puzzle) if instr[0] in ('jmp', 'nop')]
-  for i in nop2jmp:
+  nopOrjmp = [i for i, (opc,_) in enumerate(puzzle) if opc in ('jmp','nop')]
+  for i in nopOrjmp:
     puzzle[i][0] = 'jmp' if puzzle[i][0] == 'nop' else 'nop'
     executed = set()
     opcode = Opcode(puzzle)
@@ -43,11 +42,7 @@ def löse2(puzzle):
     puzzle[i][0] = 'jmp' if puzzle[i][0] == 'nop' else 'nop'
 
 
-
-
-
 puzzle = puzzle_einlesen('Tag_08.txt')
-
 
 start = time.perf_counter()
 print(löse(puzzle), time.perf_counter()-start)
