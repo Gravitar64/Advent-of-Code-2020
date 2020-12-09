@@ -15,17 +15,16 @@ def löse(puzzle, preamble):
     else:
       return(check_number)
 
-
 def löse2(puzzle,invalid):
-  for i in range(len(puzzle)):
-    summe = j = 0
-    zahlen = set()
-    while summe < invalid:
-      summe += puzzle[i+j]
-      zahlen.add(puzzle[i+j])
-      if summe == invalid:
-        return min(zahlen)+max(zahlen)
-      j += 1  
+  low, high = 0,1
+  while True:
+    summe = sum(puzzle[low:high])
+    if summe < invalid:   
+      high +=1
+    elif summe > invalid: 
+      low += 1
+    else: 
+      return max(puzzle[low:high])+min(puzzle[low:high])
 
 
 puzzle = puzzle_einlesen('Tag_09.txt')
