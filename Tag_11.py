@@ -1,9 +1,22 @@
 import time
+import pygame as pg
+from pygame._sdl2.video import Window
 
 
 def puzzle_einlesen(datei):
   with open(datei) as f:
     return {(x,y):0 for y,zeile in enumerate(f) for x,char in enumerate(zeile) if char == 'L'}
+
+def zeichne_map(map):
+  screen.fill((0,0,0))
+  for (s,z),val in map.items():
+    x,y = s*tile_size, z*tile_size
+    if val == 0:
+      pg.draw.rect(screen,(0,200,0),(x,y,tile_size,tile_size))
+    else:
+      pg.draw.rect(screen,(200,0,0),(x,y,tile_size,tile_size))
+  pg.display.flip()      
+
 
 def occ_neighbors(map,x,y,see):
   count = 0
@@ -19,6 +32,7 @@ def occ_neighbors(map,x,y,see):
 def löse(map,see,toleranz):
   occ1 = 0
   while True:
+    zeichne_map(map)
     map2 = map.copy()
     for pos in map:
       n = occ_neighbors(map,*pos,see)
@@ -30,6 +44,14 @@ def löse(map,see,toleranz):
     if occ1 == occ2: return occ2
     occ1 = occ2
     map = map2
+    
+
+
+pg.init()
+screen = pg.display.set_mode((1000,1000))
+w = Window.from_display_module()
+w.position = 1920,150
+tile_size = 10
 
 
 puzzle = puzzle_einlesen('Tag_11.txt')
