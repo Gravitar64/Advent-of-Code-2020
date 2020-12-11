@@ -8,14 +8,15 @@ def puzzle_einlesen(datei):
     return {(x,y):0 for y,zeile in enumerate(f) for x,char in enumerate(zeile) if char == 'L'}
 
 def zeichne_map(map):
-  screen.fill((0,0,0))
+  clock.tick(1)
   for (s,z),val in map.items():
-    x,y = s*tile_size, z*tile_size
+    x,y = s*tile, z*tile
     if val == 0:
-      pg.draw.rect(screen,(0,200,0),(x,y,tile_size,tile_size))
+      pg.draw.rect(screen,(0,200,0),(x,y,tile,tile))
     else:
-      pg.draw.rect(screen,(200,0,0),(x,y,tile_size,tile_size))
-  pg.display.flip()      
+      pg.draw.rect(screen,(200,0,0),(x,y,tile,tile))
+    pg.draw.rect(screen,(100,100,100),(x,y,tile,tile),1)  
+  pg.display.update()      
 
 
 def occ_neighbors(map,x,y,see):
@@ -47,15 +48,17 @@ def löse(map,see,toleranz):
     
 
 
-pg.init()
-screen = pg.display.set_mode((1000,1000))
-w = Window.from_display_module()
-w.position = 1920,150
-tile_size = 10
 
 
 puzzle = puzzle_einlesen('Tag_11.txt')
 
+pg.init()
+tile = 10
+screen = pg.display.set_mode((940,980))
+w = Window.from_display_module()
+w.position = 1920,150
+clock = pg.time.Clock()
+screen.fill((255,255,255))
 
 start = time.perf_counter()
 print(löse(puzzle,1,4), time.perf_counter()-start)
