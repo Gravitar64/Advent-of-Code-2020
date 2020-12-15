@@ -1,34 +1,23 @@
 import time
-from collections import defaultdict
-import copy
 
 def read_puzzle(file):
-  p = defaultdict(list)
   with open(file) as f:
-    for i,num in enumerate(f.readline().split(',')):
-      p[int(num)].append(i+1)
-  return p
-  
+    return [int(x) for x in f.readline().split(',')]
+    
 
 def solve(p,last_round):
-  last_num = list(p.keys())[-1]
-  runde = len(p)
-  while runde < last_round:
-    runde +=1
-    if len(p[last_num]) > 1:
-      akt = p[last_num][-1] - p[last_num][-2]
-    else:
-      akt = 0
-    p[akt].append(runde)
-    last_num = akt
-  return akt      
-
+  nums = {num:i for i,num in enumerate(p[:-1],1)}
+  last_num = p[-1]
+  for pos in range(len(p),last_round):
+    last_pos = nums.get(last_num, pos)
+    nums[last_num] = pos
+    last_num = pos - last_pos
+  return last_num      
 
 puzzle = read_puzzle('Tag_15.txt')
 
 start = time.perf_counter()
-print(solve(copy.deepcopy(puzzle),2020),time.perf_counter()-start)
+print(solve(puzzle,2020),time.perf_counter()-start)
 
 start = time.perf_counter()
 print(solve(puzzle,30_000_000),time.perf_counter()-start)
-
