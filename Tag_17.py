@@ -19,13 +19,12 @@ def solve(puzzle, dim):
            for x, c in enumerate(z) if c == '#'}
   for _ in range(6):
     neighb = Counter([p for pos in active for p in neighbors(pos)])
-    active = {pos for pos, anz in neighb.items() if anz ==
-             3 or (anz == 2 and pos in active)}
+    active = {pos for pos, anz in neighb.items() if anz == 3 or (anz == 2 and pos in active)}
   return len(active)
 
 
 puzzle = read_puzzle('Tag_17.txt')
 
-for dim in range(3,5):
+for dim in range(3,6):
   start = time.perf_counter()
   print(solve(puzzle, dim), time.perf_counter()-start)
