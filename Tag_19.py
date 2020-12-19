@@ -9,7 +9,7 @@ def read_puzzle(file):
 
 def dfs(tree, node, depth):
   if depth > 20: return ''
-  seachstr = '('
+  searchstr = '('
   for next in tree[node].split():
     if next == '|':
       searchstr += next
