@@ -1,48 +1,49 @@
 import time
-from collections import deque
+
 
 def read_puzzle(file):
   with open(file) as f:
-    return deque([int(x) for zeile in f for x in zeile])
+    return [int(x) for zeile in f for x in zeile]
 
 
-def solve(cups,part2=False):
-  if part2:
-    cups.extend(range(max(cups)+1,10_001))
-    moves = 100_000
-  else:
-    moves = 100 
-  
+def get_three(cups, current):
+  three_cups = [cups[current]]
+  for _ in range(2):
+    three_cups.append(cups[three_cups[-1]])
+  return three_cups
 
-  maxC, minC = max(cups), min(cups)
-  for i in range(moves):
-    curr_cup = cups[0]
-    cups.rotate(-1)
-    three_cups = [cups.popleft(), cups.popleft(), cups.popleft()]
-    label = curr_cup-1
-    while True:
+
+def solve(puzzle, moves):
+  maxC, minC = max(puzzle), min(puzzle)
+  current = puzzle[0]
+  cups = {a: b for a, b in zip(puzzle, puzzle[1:])}
+  cups[puzzle[-1]] = puzzle[0]
+
+  for _ in range(moves):
+    three_cups = get_three(cups, current)
+    label = current-1
+    while label < minC or label in three_cups:
+      label -= 1
       if label < minC:
         label = maxC
-      if label in cups:
-        dest_cup = cups.index(label)
-        break
-      label -= 1
-    cups.rotate(-dest_cup-1)
-    cups.extendleft(reversed(three_cups))
-    cups.rotate(dest_cup+1)
-  cups.rotate(-cups.index(1))
-  if not part2:
-    return ''.join(str(c) for c in cups)
+    cups[current] = cups[three_cups[-1]]
+    cups[three_cups[-1]] = cups[label]
+    cups[label] = three_cups[0]
+    current = cups[current]
+  
+  if moves == 100:
+    part1 = str(cups[1])
+    while part1[-1] != '1':
+      part1 += str(cups[int(part1[-1])])
+    return part1[:-1]
   else:
-    return [c for c in cups][:10] 
-
-
+    return cups[1] * cups[cups[1]]
 
 
 puzzle = read_puzzle('Tag_23.txt')
 
 start = time.perf_counter()
-print(solve(puzzle.copy()), time.perf_counter()-start)
+print(solve(puzzle, 100), time.perf_counter()-start)
 
 start = time.perf_counter()
-print(solve(puzzle, True), time.perf_counter()-start)
+print(solve(puzzle + list(range(10,1_000_001)), 10_000_000), time.perf_counter()-start)
