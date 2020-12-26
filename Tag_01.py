@@ -1,5 +1,6 @@
 from itertools import combinations
 import math
+import time
 
 def puzzle_einlesen(datei):
   with open(datei) as f:
@@ -12,6 +13,8 @@ def löse(puzzle,n):
 
 
 puzzle = puzzle_einlesen('Tag_01.txt')
-print(löse(puzzle,2))    
-print(löse(puzzle,3))    
+start = time.perf_counter()
+print(löse(puzzle,2),time.perf_counter()-start)    
+start = time.perf_counter()
+print(löse(puzzle,3),time.perf_counter()-start)    
     

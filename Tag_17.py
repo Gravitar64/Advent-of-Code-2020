@@ -25,6 +25,6 @@ def solve(puzzle, dim):
 
 puzzle = read_puzzle('Tag_17.txt')
 
-for dim in range(3,6):
+for dim in range(3,5):
   start = time.perf_counter()
   print(solve(puzzle, dim), time.perf_counter()-start)
