@@ -49,7 +49,7 @@ def solve(puzzle):
   for _, variante in rot_flip('a', karte):
     kartenStr = ''.join(variante)
     anz_monster = len(regex.findall(pattern, kartenStr, overlapped=True))
-    if anz_monster: return kartenStr.count('#') - 15 * anz_monster
+    if anz_monster: return part1, kartenStr.count('#') - 15 * anz_monster
 
   
 puzzle = read_puzzle('Tag_20.txt')
