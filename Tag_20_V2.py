@@ -1,6 +1,4 @@
-import time
-import math
-import regex
+import time, math, regex
 
 
 def read_puzzle(file):
@@ -42,8 +40,7 @@ def solve(puzzle):
     for idv in tilesV:
       if idv[0] in ids: continue
       if match_tiles(pos, idv, idvs):
-        solution = dfs(pos+1, idvs + [idv], ids | {idv[0]})
-        if solution: return solution
+        if (solution := dfs(pos+1, idvs + [idv], ids | {idv[0]})): return solution
 
   sol = dfs(0, [], set())
   part1 = math.prod(sol[i][0] for i in [0, -1, GRDS-1, -GRDS])
@@ -54,8 +51,7 @@ def solve(puzzle):
 
   for _, variante in rot_flip('a', karte):
     kartenStr = ''.join(variante)
-    monsters = len(regex.findall(pattern, kartenStr, overlapped=True))
-    if monsters:
+    if (monsters := len(regex.findall(pattern, kartenStr, overlapped=True))):
       return part1, kartenStr.count('#') - 15 * monsters
 
 
