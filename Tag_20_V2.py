@@ -1,4 +1,3 @@
-from collections import defaultdict
 import time
 import math
 import regex
@@ -16,45 +15,44 @@ def rot_flip(id, tile):
     tile = list(map(''.join, zip(*tile[::-1]))) # rotiert um 90 Grad im Uhrzeigersinn
 
 
-def create_map(solution, tilesV, GRDS):
-  karte = defaultdict(str)
-  for pos, idv in enumerate(solution):
+def create_map(sol, tilesV, GRDS):
+  karte = ['']*len(sol)
+  for pos, idv in enumerate(sol):
     puzzle_zeile = pos // GRDS
     for zeile in range(8):
       karte[puzzle_zeile*8+zeile] += tilesV[idv][zeile+1][1:9]
-  return list(karte.values())
+  return karte
 
 
 def solve(puzzle):
-  tiles = {int(tile[0][5:-1]): tile[1:] for tile in puzzle}
-  anzTiles = len(tiles)
+  anzTiles = len(puzzle)
   GRDS = int(math.sqrt(anzTiles))
-  tilesV = {idv: variante for id, tile in tiles.items()
-            for idv, variante in rot_flip(id, tile)}
+  tilesV = {idv: variante for tile in puzzle 
+            for idv, variante in rot_flip(int(tile[0][5:-1]),tile[1:])}
 
-  def match_tiles(pos, idv, placed_idvs):
+  def match_tiles(pos, idv, idvs):
     spalte, zeile = pos % GRDS, pos // GRDS
+    matchV = zeile == 0 or tilesV[idv][0] == tilesV[idvs[pos-GRDS]][-1]
     matchH = spalte == 0 or [z[0] for z in tilesV[idv]] == [
-        z[-1] for z in tilesV[placed_idvs[pos-1]]]
-    matchV = zeile == 0 or tilesV[idv][0] == tilesV[placed_idvs[pos-GRDS]][-1]
+        z[-1] for z in tilesV[idvs[pos-1]]]
     return matchH and matchV
 
-  def dfs(pos, placed_idvs, seen_ids):
-    if pos == anzTiles: return placed_idvs
+  def dfs(pos, idvs, ids):
+    if pos == anzTiles: return idvs
     for idv in tilesV:
-      if idv[0] in seen_ids: continue
-      if match_tiles(pos, idv, placed_idvs):
-        solution = dfs(pos+1, placed_idvs + [idv], seen_ids | {idv[0]})
+      if idv[0] in ids: continue
+      if match_tiles(pos, idv, idvs):
+        solution = dfs(pos+1, idvs + [idv], ids | {idv[0]})
         if solution: return solution
 
   sol = dfs(0, [], set())
-  part1 = math.prod(idv[0] for idv in [sol[0], sol[-1], sol[GRDS-1], sol[-GRDS]])
+  part1 = math.prod(sol[i][0] for i in [0, -1, GRDS-1, -GRDS])
 
   karte = create_map(sol, tilesV, GRDS)
   pattern = r'#[.#]{77}#....##....##....###[.#]{77}#..#..#..#..#..#'
   # puzzle = 12 Teile * 8 = 96 - 19 = 77
 
-  for idv, variante in rot_flip('a', karte):
+  for _, variante in rot_flip('a', karte):
     kartenStr = ''.join(variante)
     monsters = len(regex.findall(pattern, kartenStr, overlapped=True))
     if monsters:
