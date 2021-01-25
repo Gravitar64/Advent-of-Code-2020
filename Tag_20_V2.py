@@ -1,6 +1,4 @@
-import time
-import math
-import regex
+import time, math, regex
 
 
 def read_puzzle(file):
